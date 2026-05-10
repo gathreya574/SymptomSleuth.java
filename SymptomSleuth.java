@@ -12,7 +12,7 @@ import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.FontFormatException;
 
-
+import java.util.Scanner;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,6 +40,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.AudioSystem;
@@ -115,7 +116,8 @@ class SymptomSleuthCards extends JPanel
 		}
 
 		// create player info objecy/instance
-		PlayerInfo info = new PlayerInfo();
+		GameData info = new GameData();
+		info.loadFiles();
 		// create all game screes ad pass all data(variables)
 		StartPanel sp = new StartPanel(this, allPanelCards, info, myFont);
 		SettingsPanel sgp = new SettingsPanel(this, allPanelCards, info, myFont);
@@ -124,6 +126,8 @@ class SymptomSleuthCards extends JPanel
 		LeaderBoardPanel lbp = new LeaderBoardPanel(this, allPanelCards, info, myFont);
 		InstructionsPanel ip = new InstructionsPanel(this, allPanelCards, info, myFont);
 		QuestionsPanel qp = new QuestionsPanel(this, allPanelCards, info, myFont);
+		CongratsPanel cp = new CongratsPanel(this, allPanelCards, info, myFont);
+		
 		
 		// add each panel to CardLayout with a name
 		add(sp, "start");
@@ -133,6 +137,7 @@ class SymptomSleuthCards extends JPanel
 		add(lbp, "leader");
 		add(ip, "instructions");
 		add(qp,"questions");
+		add(cp, "congrats");
 	}
 	
 	
@@ -199,10 +204,10 @@ class StartPanel extends JPanel implements ActionListener, MouseListener
 	private Color myColor;
 	private JMenuItem leader, instruction, exit;
 	private boolean pressed;// to see if they pressed enter
-	private PlayerInfo info;
+	private GameData info;
 	private Font myFont;
 		
-	public StartPanel(SymptomSleuthCards scIn, CardLayout cardsIn, PlayerInfo infoIn, Font fontIn)
+	public StartPanel(SymptomSleuthCards scIn, CardLayout cardsIn, GameData infoIn, Font fontIn)
 	{
 		allPanelCards = cardsIn;
 		firstPanel = scIn;
@@ -222,14 +227,20 @@ class StartPanel extends JPanel implements ActionListener, MouseListener
 		
 		// title labels
 		JLabel title1 = new JLabel("Symptom");
+		//JLabel tilte1Overlap = new JLabel("Symptom");
 		JLabel title2 = new JLabel("Sleuth");
+		//JLabel tilte2Overlap = new JLabel("Sleuth");
 		// set font, size, position, color
 		title1.setFont(myFont.deriveFont(200f));
 		title1.setBounds(250,80,700,200);
-		title1.setForeground(new Color (15, 25, 45));
+		title1.setForeground(Color.WHITE);
+		//tilte1Overlap.setFont(myFont.deriveFont(215f));
+		//tilte1Overlap.setBounds(235,80,700,200);
+		//tilte1Overlap.setForeground(new Color (15, 25, 45));
 		title2.setFont(myFont.deriveFont(200f));
 		title2.setBounds(350,250,700,200);
-		title2.setForeground(new Color (15, 25, 45));
+		title2.setForeground(Color.WHITE);
+		//title2.setForeground(new Color (15, 25, 45));
 		
 		// background image usiing image icon and JLabel
 		ImageIcon icon = new ImageIcon("images/hospitalBackground.png");
@@ -240,8 +251,11 @@ class StartPanel extends JPanel implements ActionListener, MouseListener
 		startGame = new JButton("Start Game");
 		startGame.setFont(myFont.deriveFont(40f));
 		startGame.setForeground(Color.BLACK);
-		startGame.setBackground(myColor);
+		startGame.setBackground(Color.WHITE);
 		startGame.setBounds(380, 500, 200, 50);
+	//	startGame.setOpaque(false);
+		///startGame.setFocusPainted(false);
+		startGame.setBorderPainted(false);
 		startGame.addActionListener(this);
 		// text field for name
 		name = new JTextField("Enter your name here");
@@ -249,6 +263,7 @@ class StartPanel extends JPanel implements ActionListener, MouseListener
 		name.setBounds(380, 450, 200, 25);
 		name.setBackground(Color.WHITE);
 		name.setForeground(Color.BLACK);
+		//name.setOpaque(false);
 		name.addActionListener(this);
 		// detect mouse click to clear text
 		name.addMouseListener(this);
@@ -256,8 +271,11 @@ class StartPanel extends JPanel implements ActionListener, MouseListener
 		settingsB = new JButton("Settings");
 		settingsB.setFont(myFont.deriveFont(30f));
 		settingsB.setBounds(0, 0, 110, 30);
-		settingsB.setForeground(Color.BLACK);
+		settingsB.setForeground(Color.WHITE);
 		settingsB.setBackground(Color.WHITE);
+		settingsB.setOpaque(false);
+		settingsB.setFocusPainted(false);
+		settingsB.setBorderPainted(false);
 		settingsB.addActionListener(this);
 		
 		// create  a menu with options to go to leaderboard, exit, instructions
@@ -270,31 +288,36 @@ class StartPanel extends JPanel implements ActionListener, MouseListener
 		leader.addActionListener(this);
 		instruction.addActionListener(this);
 		exit.addActionListener(this);
-		leader.setBackground(Color.WHITE);
 		leader.setFont(myFont.deriveFont(40f));
-		leader.setForeground(Color.BLACK);
-		instruction.setBackground(Color.WHITE);
-		instruction.setForeground(Color.BLACK);
+		leader.setForeground(Color.WHITE);
+		leader.setBackground(new Color(15,24,75));
+		instruction.setForeground(Color.WHITE);
 		instruction.setFont(myFont.deriveFont(40f));
-		exit.setBackground(Color.WHITE);
-		exit.setForeground(Color.BLACK);
+		instruction.setBackground(new Color(15,24,75));
+		exit.setForeground(Color.WHITE);
 		exit.setFont(myFont.deriveFont(40f));
-		menu.setBackground(Color.WHITE);
-		menu.setForeground(Color.BLACK);
+		exit.setBackground(new Color(15,24,75));
+		menu.setForeground(Color.WHITE);
 		menu.setFont(myFont.deriveFont(35f));
+		menu.setBackground(new Color(15,24,75));
+
 		
 		menu.add(leader);
 		menu.add(instruction);
 		menu.add(exit);
 		menuBar.add(menu);
 		menuBar.setBounds(880,0,110,30);
-		menuBar.setBackground(myColor);
+		//menuBar.setBackground(Color.WHITE);
+		menuBar.setOpaque(false);
+		menuBar.setBorderPainted(false);
+		
 		
 		// add everything to background
 		background.add(name);
 		background.add(settingsB);
 		background.add(startGame);
 		background.add(title1);
+		//background.add(tilte1Overlap);
 		background.add(title2);
 		background.add(menuBar);
 		add(background);
@@ -366,11 +389,11 @@ class SettingsPanel extends JPanel implements ActionListener
 	private SymptomSleuthCards firstPanel;// reference to main panel system 
 	private CardLayout allPanelCards;// layout used to switch between screens
 	private JButton on, off, font1, font2, home;// buttons for settings options
-	private PlayerInfo info;// stores player data
+	private GameData info;// stores player data
 	private Font myFont;// custom font used for styling
 
 	
-	public SettingsPanel(SymptomSleuthCards scIn, CardLayout cardsIn, PlayerInfo infoIn, Font fontIn)
+	public SettingsPanel(SymptomSleuthCards scIn, CardLayout cardsIn, GameData infoIn, Font fontIn)
 	{
 		firstPanel = scIn;
 		allPanelCards = cardsIn;
@@ -404,12 +427,32 @@ class SettingsPanel extends JPanel implements ActionListener
 		//JPanel on = new JPanel(new 
 		on = new JButton("On");// turn music on
 		on.setFont(myFont.deriveFont(50f));
+		on.setOpaque(false);
+		on.setContentAreaFilled(false);
+		//on.setFocusPainted(false);
+		on.setBorderPainted(false);
+		on.setForeground(Color.WHITE);
 		off = new JButton("Off");// turn music off
 		off.setFont(myFont.deriveFont(50f));
+		off.setOpaque(false);
+		off.setContentAreaFilled(false);
+		//off.setFocusPainted(false);
+		off.setBorderPainted(false);
+		off.setForeground(Color.WHITE);
 		font1 = new JButton("Times New Roman");// place holder for font1 ("Times New Roman" != font1)
 		font1.setFont(myFont.deriveFont(50f));
+		font1.setOpaque(false);
+		font1.setContentAreaFilled(false);
+		//font1.setFocusPainted(false);
+		font1.setBorderPainted(false);
+		font1.setForeground(Color.WHITE);
 		font2 = new JButton("Sans Serif");// place holder for font2 ("SansSerif" != font2)
 		font2.setFont(myFont.deriveFont(50f));
+		font2.setOpaque(false);
+		font2.setContentAreaFilled(false);
+		//font2.setFocusPainted(false);
+		font2.setBorderPainted(false);
+		font2.setForeground(Color.WHITE);
 		// add action listeners so buttons respond to clicks
 		on.addActionListener(this);
 		off.addActionListener(this);
@@ -468,129 +511,195 @@ class DoorsPanel extends JPanel implements ActionListener
 {
 	private SymptomSleuthCards firstPanel;
 	private CardLayout allPanelCards;
-	private JButton door1, door2, door3;// buttons representing the 3 doors
-	private PlayerInfo info;
+	private JButton door1, door2, door3;
+	private JLabel label; // Moved here so it can be updated
+	private GameData info;
 	private Font myFont;
+	
+	private String[] doorFiles = {"door1.png", "door2.png", "door3.png", "door4.png", "door5.png"};
 		
-	public DoorsPanel(SymptomSleuthCards scIn, CardLayout cardsIn, PlayerInfo infoIn, Font fontIn)
+	public DoorsPanel(SymptomSleuthCards scIn, CardLayout cardsIn, GameData infoIn, Font fontIn)
 	{
 		firstPanel = scIn;
 		allPanelCards = cardsIn;
 		info = infoIn;
 		myFont = fontIn;
 		
-		setLayout(new BorderLayout());	// set layout of this panel to BorderLayout
+		setLayout(new BorderLayout());	
 		
-		JPanel titlePanel = new JPanel();// create a panel to hold the title
-		JLabel label = new JLabel("Pick one of the doors!");// create label with instructions
-		label.setFont(myFont.deriveFont(40f));// apply custom font and size
-		titlePanel.add(label);// add label to title panel
+		JPanel titlePanel = new JPanel();
+		label = new JLabel("Pick one of the doors!"); // Initial text
+		label.setFont(myFont.deriveFont(40f));
+		titlePanel.add(label);
 		
-		JPanel doorPanel = new JPanel(new GridLayout(1,3));// create panel with 1 row and 3 columns (for 3 doors)
-		String[] names = {"door1","door2","door3","door4","door5"};// array storing names of door image files
+		door1 = new JButton();
+		door2 = new JButton();
+		door3 = new JButton();
 		
-		
-		
-		int level = 1;// current level of the game (used to pick which door image to use)
-		
-		if(level<=5)// check if level is within range of available images
-		{
-			ImageIcon doorPic = new ImageIcon("images/" + names[level-1]+".png");	// create image path using level 
-			
-			// create 3 buttons using the same door image
-			door1 = new JButton(doorPic);
-			door2 = new JButton(doorPic);
-			door3 = new JButton(doorPic);
-		}
-		level++;// increase level (this doesn’t really affect anything yet)
-		// add action listeners so buttons respond when clicked
 		door1.addActionListener(this);
 		door2.addActionListener(this);
 		door3.addActionListener(this);
 		
-		// add doors to panel
+		JPanel doorPanel = new JPanel(new GridLayout(1, 3));
 		doorPanel.add(door1);		
 		doorPanel.add(door2);
 		doorPanel.add(door3);
 		
-		add(titlePanel, BorderLayout.NORTH);//. add tite to the top
-		add(doorPanel, BorderLayout.CENTER);// add dorrs in the center
+		add(titlePanel, BorderLayout.NORTH);
+		add(doorPanel, BorderLayout.CENTER);
+	}
+
+	public void paintComponent(Graphics g)
+	{
+		super.paintComponent(g);
+		
+		// Update the Title with the current level
+		label.setText("Level " + info.getLevel() + ": Pick a Door!");
+		
+		int doorIndex = (info.getLevel() - 1) / 2;
+		if (doorIndex > 4) doorIndex = 4;
+		
+		ImageIcon doorPic = new ImageIcon("images/" + doorFiles[doorIndex]);
+		door1.setIcon(doorPic);
+		door2.setIcon(doorPic);
+		door3.setIcon(doorPic);
 	}
 
 	public void actionPerformed(ActionEvent evt) 
     {
-		// check if ANY of the 3 doors was clicked
-		if(evt.getSource() == door1|| evt.getSource() == door2|| evt.getSource() == door3)
+		if(evt.getSource() == door1 || evt.getSource() == door2 || evt.getSource() == door3)
 		{
-			allPanelCards.show(firstPanel, "people");// switch to the "people" screen
+			info.setActiveCase(); // Now picks a random patient for the RIGHT level
+			allPanelCards.show(firstPanel, "people");
 		}	
 	}
+}
 			
 			
 			
 	
-}
-class PeoplePanel extends JPanel implements MouseListener
+
+class PeoplePanel extends JPanel implements MouseListener, MouseMotionListener
 {
 	private SymptomSleuthCards firstPanel;
 	private CardLayout allPanelCards;
-	private PlayerInfo info;
+	private GameData info;
 	private Font myFont;
+	private JLabel bubbleLabel; // the draggable speech bubble
+	private int mouseX, mouseY; // used for smooth dragging
 	
-	public PeoplePanel(SymptomSleuthCards scIn, CardLayout cardsIn, PlayerInfo infoIn, Font fontIn)
+	// target location for the bubble outline
+	private final int GOAL_X = 270; 
+	private final int GOAL_Y = 72;
+	private final int TARGET_RANGE = 40; // how close they need to get to snap it
+
+	public PeoplePanel(SymptomSleuthCards scIn, CardLayout cardsIn, GameData infoIn, Font fontIn)
 	{
-		firstPanel = scIn;
+		firstPanel = scIn;	
 		allPanelCards = cardsIn;
 		info = infoIn;
 		myFont = fontIn;
+		
+		// allows us to place the bubble using x and y coordinates
+		setLayout(null); 
 
-		// set layout to BorderLayout
-		setLayout(new BorderLayout());
-		// load patient image from file
-		ImageIcon icon2 = new ImageIcon("images/patient.png");
-		JLabel peopleImage = new JLabel(icon2);// place image inside a JLabel so it can be displayed
-		peopleImage.addMouseListener(this);// add mouse listener to detect clicks on the image
+		// create background image for the patient
+		ImageIcon patientIcon = new ImageIcon("images/patient.png");
+		JLabel background = new JLabel(patientIcon);
+		background.setBounds(0, 0, 960, 600);
 		
-		add(peopleImage, BorderLayout.CENTER);	// add image to center of screen
+		// create the bubble image
+		ImageIcon bubbleIcon = new ImageIcon("images/bubble.png");
+		bubbleLabel = new JLabel(bubbleIcon);
 		
+		// call method to set a random start position
+		resetBubbleLocation();
+		
+		// set size of the label to match the bubble image
+		bubbleLabel.setSize(250, 150);
+
+		// add listeners to the bubble so it can be dragged
+		bubbleLabel.addMouseListener(this);
+		bubbleLabel.addMouseMotionListener(this);
+
+		// add bubble first so it stays on top of the background
+		add(bubbleLabel);
+		add(background);
 	}
-	public void mouseClicked(MouseEvent evt) 
+
+	// moves the bubble to a random spot on the right side
+	public void resetBubbleLocation() 
 	{
-		// get x and y coordinates of where the user clicked
-		int x = evt.getX();
-		int y = evt.getY();
+		// pick random X on the right side of the screen
+		int startX = (int)(Math.random() * 230) + 480; 
+		// pick random Y in the middle area
+		int startY = (int)(Math.random() * 350) + 50;
 		
+		// update bubble position
+		bubbleLabel.setLocation(startX, startY);
+	}
+
+	public void paintComponent(Graphics g) 
+	{
+		super.paintComponent(g);
 		
-		// check if click is inside the speech bubble area
-		// (these numbers define a rectangular region on the image)
-		if(x>=270 && x<=515&&y>=72&&y<=181)
+		// if the bubble is at the goal, reset it for the next patient
+		if (bubbleLabel.getX() == GOAL_X && bubbleLabel.getY() == GOAL_Y) 
 		{
-			// if clicked inside the correct area:
+			resetBubbleLocation();
+		}
+	}
+
+	public void mousePressed(MouseEvent evt)
+	{
+		// save where the mouse clicked inside the bubble
+		mouseX = evt.getX();
+		mouseY = evt.getY();
+	}
+
+	public void mouseDragged(MouseEvent evt) 
+	{
+		// move the bubble based on where the mouse is moving
+		int newX = bubbleLabel.getX() + evt.getX() - mouseX;
+		int newY = bubbleLabel.getY() + evt.getY() - mouseY;
+		
+		// update location as it drags
+		bubbleLabel.setLocation(newX, newY);
+	}
+
+	public void mouseReleased(MouseEvent evt) 
+	{
+		// check if they dropped the bubble close enough to the target
+		if (Math.abs(bubbleLabel.getX() - GOAL_X) < TARGET_RANGE && 
+			Math.abs(bubbleLabel.getY() - GOAL_Y) < TARGET_RANGE) 
+		{
+			// snap it exactly into place
+			bubbleLabel.setLocation(GOAL_X, GOAL_Y);
 			
-			// switch to the "questions" screen
+			// pick the random patient data for this turn
+			info.setActiveCase();
 			
+			// move to the questions screen
 			allPanelCards.show(firstPanel, "questions");
 		}
-
-		
-		
 	}
 
-	public void mouseReleased(MouseEvent evt){}
-	public void mousePressed(MouseEvent evt){}
-	public void mouseEntered(MouseEvent evt){}
-	public void mouseExited(MouseEvent evt){}
+	// required methods that we aren't using
+	public void mouseClicked(MouseEvent evt) {}
+	public void mouseEntered(MouseEvent evt) {}
+	public void mouseExited(MouseEvent evt) {}
+	public void mouseMoved(MouseEvent evt) {}
 }
 
 class LeaderBoardPanel extends JPanel implements ActionListener
 {
 	private SymptomSleuthCards firstPanel;
 	private CardLayout allPanelCards;
-	private PlayerInfo info;
+	private GameData info;
 	private Font myFont;
 	private JButton home;// button to return to start screen
 	
-	public LeaderBoardPanel(SymptomSleuthCards scIn, CardLayout cardsIn, PlayerInfo infoIn, Font fontIn)
+	public LeaderBoardPanel(SymptomSleuthCards scIn, CardLayout cardsIn, GameData infoIn, Font fontIn)
 	{
 		firstPanel = scIn;
 		allPanelCards = cardsIn;
@@ -633,45 +742,125 @@ class QuestionsPanel extends JPanel implements ActionListener
 {
 	private SymptomSleuthCards firstPanel;
 	private CardLayout allPanelCards;
-	private PlayerInfo info;
+	private GameData info;
 	private Font myFont;
-	private JLabel text;// label used to display greeting message
 	
-	public QuestionsPanel(SymptomSleuthCards scIn, CardLayout cardsIn, PlayerInfo infoIn, Font fontIn)
+	private JTextArea symptomText; // Main symptom display
+	private JLabel patientHeader;  // Top info bar
+	private JButton[] choiceButtons = new JButton[4]; 
+
+	public QuestionsPanel(SymptomSleuthCards scIn, CardLayout cardsIn, GameData infoIn, Font fontIn)
 	{
 		firstPanel = scIn;
 		allPanelCards = cardsIn;
 		info = infoIn;
 		myFont = fontIn;
 		
-		setLayout(new BorderLayout());
+		// Set the main layout to BorderLayout
+		setLayout(new BorderLayout(10, 10)); // 10px gaps between sections
 		
-		JPanel patientText = new JPanel();// create panel to hold text label
-		text = new JLabel();// create label (initially empty)
-		text.setFont(myFont.deriveFont(50f));// set font size for label
-		patientText.add(text);// add label to panel
-		add(patientText, BorderLayout.NORTH);	// add panel to top of screen
+		//patient Header
+		patientHeader = new JLabel("", JLabel.CENTER);
+		patientHeader.setFont(myFont.deriveFont(40f));
+		add(patientHeader, BorderLayout.NORTH);
 		
+       //Symptoms (Scrollable)
+		symptomText = new JTextArea();
+		symptomText.setLineWrap(true);
+		symptomText.setWrapStyleWord(true);
+		symptomText.setEditable(false);
+		symptomText.setFont(myFont.deriveFont(30f));
+		
+		JScrollPane scroll = new JScrollPane(symptomText);
+		add(scroll, BorderLayout.CENTER);
+		
+		//answer Buttons
+		JPanel buttonPanel = new JPanel(new GridLayout(2, 2, 5, 5));
+		for(int i = 0; i < 4; i++)
+		{
+			choiceButtons[i] = new JButton();
+			choiceButtons[i].setFont(myFont.deriveFont(25f));
+			choiceButtons[i].addActionListener(this);
+			buttonPanel.add(choiceButtons[i]);
+		}
+		add(buttonPanel, BorderLayout.SOUTH);
 	}
-	public void paintComponent(Graphics g) 
-	{
-		text.setText("Hello Dr. " + info.getName() + "!!");// update label text every time panel is drawn
-		
-	}
+
+	public void paintComponent(Graphics g)
+{
+	super.paintComponent(g);
 	
-	public void actionPerformed(ActionEvent evt) 
-    {}
+	// pull the new random data from our active index
+	String age = info.getCaseData(1);
+	String gender = info.getCaseData(4);
+	String symptoms = info.getCaseData(5);
+	
+	// update the header and the main symptom text
+	patientHeader.setText("Level " + info.getLevel() + ": " + gender + " (Age " + age + ")");
+	symptomText.setText(symptoms);
+	
+	// update the buttons 
+	for(int i = 0; i < 4; i++)
+	{
+		choiceButtons[i].setText(info.getCaseData(6 + i)); // loads columns 6, 7, 8, 9
+	}
+}
+	
+	public void actionPerformed(ActionEvent evt)
+	{
+		JButton clicked = (JButton)evt.getSource();
+		int correctButtonIndex = Integer.parseInt(info.getCaseData(10).trim());
+		String correctAnsText = choiceButtons[correctButtonIndex].getText();
+    
+		if(clicked.getText().equals(correctAnsText))
+		{
+			// SUCCESS! 
+			info.resetAttempts(); // Reset mistakes for the new level
+			info.setLevel(info.getLevel() + 1); // Move to next level
+        
+			if(info.getLevel() > 10)
+			{
+				// If they beat level 10, they win!
+				allPanelCards.show(firstPanel, "congrats");
+			}
+			else
+			{
+				// If they got it right, they go back to the doors 
+				// for the NEW level.
+				allPanelCards.show(firstPanel, "door");
+			}	
+		}
+		else
+		{
+			// WRONG ANSWER
+			info.useAttempt();
+        
+			if(info.getAttempts() < 2)
+			{
+				// First mistake: Go back to doors on the SAME level
+				// This allows them to pick a new door/patient for Level X.
+				allPanelCards.show(firstPanel, "door");
+			}
+			else
+			{
+				// Second mistake: Game Over
+				info.resetAttempts();
+				info.setLevel(1); 
+				allPanelCards.show(firstPanel, "start");
+			}
+		}
+	}	
 }
 
 class InstructionsPanel extends JPanel implements ActionListener
 {
 	private SymptomSleuthCards firstPanel;
 	private CardLayout allPanelCards;
-	private PlayerInfo info;
+	private GameData info;
 	private Font myFont;
 	private JButton home;// button to return to home screen
 	
-	public InstructionsPanel(SymptomSleuthCards scIn, CardLayout cardsIn, PlayerInfo infoIn, Font fontIn)
+	public InstructionsPanel(SymptomSleuthCards scIn, CardLayout cardsIn, GameData infoIn, Font fontIn)
 	{
 		firstPanel = scIn;
 		allPanelCards = cardsIn;
@@ -758,22 +947,195 @@ class InstructionsPanel extends JPanel implements ActionListener
 		}
 	}
 }
-	
 
-class PlayerInfo
+class CongratsPanel extends JPanel implements ActionListener
 {
-	private String theName = ""; // stores player name
+	private SymptomSleuthCards firstPanel;
+	private CardLayout allPanelCards;
+	private GameData info;
+	private Font myFont;
 	
-	public String getName()
+	public CongratsPanel(SymptomSleuthCards scIn, CardLayout cardsIn, GameData infoIn, Font fontIn)
 	{
-		return theName;// return stored name
+		firstPanel = scIn;
+		allPanelCards = cardsIn;
+		info = infoIn;
+		myFont = fontIn;
+		
+		setLayout(new BorderLayout());
+		
+		JPanel hello = new JPanel();
+		JLabel label = new JLabel("CONGRATS! YOU WON THE GAME");
+		hello.add(label);
+		add(hello, BorderLayout.CENTER);
 	}
-	public void setName(String n)
+	
+	public void actionPerformed(ActionEvent evt)
 	{
-		theName = n; // save new name
 	}
 }
 
+/* This class stores all the shared data for the game, including 
+ * the patient files loaded from the text file.
+ */
+class GameData
+{
+	private String theName = ""; // stores player name
+	private int currentLevel = 1; // tracks levels 1-10
+	private int attempts = 0; // tracks the 2 attempts per case
 	
+	// 2D Array to store 200 cases, each with 11 pieces of info
+	private String[][] allCases = new String[200][11]; 
+	private int totalQuestionsLoaded = 0; // actual count from file
+	private int activeCaseIndex = 0; // the row index of the current patient
+    private int currentCaseRow;  // The row currently being played
+    
+	public GameData()
+	{
+		// Constructor is empty; call loadFiles() from SymptomSleuthCards
+	}
+
+	
+	public void loadFiles()
+	{
+		try
+		{
+			Scanner infile = new Scanner(new File("questions.txt"));
+			int row = 0;
+			
+			// Loop through the file until empty or we hit the 200 cap
+			while(infile.hasNext() && row < 200)
+			{
+				String line = infile.nextLine();
+				
+				// Only process lines that aren't empty
+				if(!line.trim().equals(""))
+				{
+					int col = 0;
+					
+					// Manually "splitting" the string by finding each '|'
+					// While there is still a pipe in the string AND we haven't filled 10 columns
+				int pipePos = line.indexOf("|"); 
+
+				while(pipePos != -1 && col < 10)
+				{
+					allCases[row][col] = line.substring(0, pipePos); // Save data before pipe
+                   line = line.substring(pipePos + 1);              // Remove saved part + the pipe
+                   col++;
+    
+					// Update pipePos for the next check
+					pipePos = line.indexOf("|"); 
+				}
+
+				// After the loop, save the very last piece of data (the answer index)
+				// which doesn't have a pipe after it
+				if (col < 11) 
+				{
+					allCases[row][col] = line.trim();
+				}	
+					
+					row++;
+				}
+			}
+			totalQuestionsLoaded = row; // store how many were actually loaded
+		}
+		catch(IOException e)
+		{
+			// If file is missing, print error to console
+			System.err.println("Error: questions.txt not found!");
+			e.printStackTrace();
+		}
+	}
+
+
+	public void setActiveCase()
+	{
+		// temporary list to hold row numbers for this level
+		int[] matchingRows = new int[totalQuestionsLoaded];
+		int matchCount = 0;
+
+		// find every row that matches the player's level
+		for (int i = 0; i < totalQuestionsLoaded; i++)
+		{
+			// check if column 0 (the level) matches
+			if (allCases[i][0] != null && Integer.parseInt(allCases[i][0].trim()) == currentLevel)
+			{
+				matchingRows[matchCount] = i; // save the row index
+				matchCount++;
+			}
+		}
+
+		// if found matches, pick one randomly
+		if (matchCount > 0)
+		{
+			int randomChoice = (int)(Math.random() * matchCount);
+			activeCaseIndex = matchingRows[randomChoice]; 
+		}
+	}
+
 		
+
+	public String getCaseData(int column)
+	{
+		return allCases[activeCaseIndex][column];
+	}
+
+	// GETTERS AND SETTERS
+	public String getName() 
+	{ 
+		return theName;
+	}
+	public void setName(String n) 
+	{ 
+		theName = n; 
+	}
+
+	public int getLevel() 
+	{ 
+		return currentLevel; 
+	}
+	public void setLevel(int l) 
+	{ 
+		currentLevel = l; 
+	}
+
+	public int getAttempts() 
+	{ 
+		return attempts; 
+	}
+	public void useAttempt() 
+	{ 
+		attempts++; 
+	}
+	public void resetAttempts() 
+	{ 
+		attempts = 0; 
+	}		
+	public int getRandomCaseIndex(int level) {
+        int[] matchingIndices = new int[allCases.length];
+        int count = 0;
+
+        for (int i = 0; i < allCases.length; i++) {
+            // Check column 0 for the level match
+            if (allCases[i][0] != null && Integer.parseInt(allCases[i][0].trim()) == level) {
+                matchingIndices[count] = i;
+                count++;
+            }
+        }
+
+        if (count > 0) {
+            int randomChoice = (int)(Math.random() * count);
+            return matchingIndices[randomChoice];
+        }
+        return 0; 
+    }
+
+    //  "setter" to update the row
+    public void setCurrentCaseRow(int newRow) 
+    {
+		currentCaseRow = newRow;
+	}
+
+}
+
 		
